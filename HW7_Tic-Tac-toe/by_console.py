@@ -1,3 +1,4 @@
+import time
 matrix = []
 
 def drawBoard():
@@ -67,5 +68,6 @@ def main():
         print("플레이어 x가 이겼습니다.")
     else:
         print("플레이어 o가 이겼습니다.")
+    time.sleep(5)
 
 main()
