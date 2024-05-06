@@ -8,6 +8,8 @@ def loadFile(path):
     return data_list
 
 class MainGui:
+    def judge
+
 
     def reset(self):
         s_word = random.choice(self.word_lists)

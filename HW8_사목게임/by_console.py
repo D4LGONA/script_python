@@ -10,78 +10,33 @@ def drawBoard():
     print("-----------------------------")
 
 def check_win():
-    drawBoard()
-    # 가로 확인
-    combo = 0
-    pre = ''
-    for i in range(6):
+    for i in range(6): # 가로
+        for j in range(4):
+            player = matrix[i][j]
+            if player != ' ' and player == matrix[i][j+1] and player == matrix[i][j+2] and player == matrix[i][j+3]:
+                return True
+
+    for i in range(3): # 세로
         for j in range(7):
-            if matrix[i][j] != ' ':
-                if pre == matrix[i][j]:
-                    combo += 1
-                else:
-                    combo = 1
-                    pre = matrix[i][j]
-            if combo >= 4: return True
+            player = matrix[i][j]
+            if player != ' ' and player == matrix[i+1][j] and player == matrix[i+2][j] and player == matrix[i+3][j]:
+                return True
 
-        combo = 0
-        pre = ' '
+    for i in range(3):
+        for j in range(4):
+            player = matrix[i][j]
+            if player != ' ' and player == matrix[i+1][j+1] and player == matrix[i+2][j+2] and player == matrix[i+3][j+3]:
+                return True
 
-    # 세로 확인
-    combo = 0
-    pre = ''
-    for i in range(7):
-        for j in range(6):
-            if matrix[j][i] != ' ':
-                if pre == matrix[j][i]:
-                    combo += 1
-                else:
-                    combo = 1
-                    pre = matrix[j][i]
-                if combo >= 4: return True
-
-        combo = 0
-        pre = ' '
-
-    combo = 0
-    pre = ''
-    # 가운데로부터 오른쪽 위
-    for i in range(4):
-        for j in range(7 - i):
-            if i == 0 and j == 6: continue
-            if matrix[j + i][j] != ' ':
-                if pre == matrix[j + i][i]:
-                    combo += 1
-                else:
-                    combo = 1
-                    pre = matrix[j + i][i]
-                if combo >= 4: return True
-        combo = 0
-        pre = ''
-
-    combo = 0
-    pre = ''
-
-    # 가운데로부터 오른쪽 아래
-    for i in range(2):
-        for j in range(5 - i):
-            if matrix[j][j + i] != ' ':
-                if pre == matrix[j][j + i]:
-                    combo += 1
-                else:
-                    combo = 1
-                    pre = matrix[j][j + i]
-                if combo >= 4: return True
-        combo = 0
-        pre = ''
-
-    combo = 0
-    pre = ''
-    # 가운데로부터 왼쪽 위
-    # todo: 여기부터 해야 함
+    for i in range(3):
+        for j in range(3, 7):
+            player = matrix[i][j]
+            if player != ' ' and player == matrix[i+1][j-1] and player == matrix[i+2][j-2] and player == matrix[i+3][j-3]:
+                return True
 
 
     return False
+
 
 def main():
     for i in range(6):
@@ -141,6 +96,6 @@ def main():
         print("Red가 이겼습니다.")
     else:
         print("Yellow가 이겼습니다.")
-    time.sleep(5)
+    time.sleep(3)
 
 main()
