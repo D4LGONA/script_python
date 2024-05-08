@@ -8,8 +8,7 @@ class Player:
         self.used = [False for i in range(self.UPPER+self.LOWER)]
 
     def setScore(self, score, index):
-        # 각각의 카테고리별로 점수가 적절하면 적는거? 뭔소리야
-        pass
+        self.scores[index] = score
 
     def setAtUsed(self, index):
         # used를 true로 만드는 것
@@ -18,34 +17,38 @@ class Player:
     def getUpperScore(self):
         # 상단 6개 점수 합계
         score = 0
-        for i in range(Player.UPPER):
-            if self.used[i]:
+        if self.allUpperUsed():
+            for i in range(Player.UPPER):
                 score += self.scores[i]
         return score
 
     def getLowerScore(self):
         # 하단 7개 점수 합계
         score = 0
-        for i in range(Player.UPPER):
-            if self.used[i]:
+        if self.allLowerUsed():
+            for i in range(Player.LOWER):
                 score += self.scores[i]
         return score
 
     def getUsed(self):
-        pass
+        return self.used
 
     def getTotalScore(self):
-        pass
+        if self.allLowerUsed() and self.allUpperUsed():
+            return self.getLowerScore() + self.getUpperScore()
 
     def toString(self):
         return self.name
 
     def allLowerUsed(self): #lower category 7개 모두 사용되었는가 ?
-        pass
+        for i in range(self.LOWER):
+            if self.used[i] == False:
+                return False
+        return True
 
     def allUpperUsed(self): #upper category 6개 모두 사용되었는가 ?
         #UpperScores, UpperBonus 계산에 활용
         for i in range(self.UPPER):
-            if (self.used[i] == False):
+            if self.used[i] == False:
                 return False
         return True
