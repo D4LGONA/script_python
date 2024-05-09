@@ -34,7 +34,6 @@ class Game2048:
         self.merge = False
         self.moved = False
         key = event.keysym
-        print(key)
         # if문의 흔적.
         self.compressGrid(key)
         self.mergeGrid(key)
