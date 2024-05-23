@@ -80,10 +80,10 @@ class YahtzeeBoard:
         # UPPER category가 전부 사용되었으면 UpperScore, UpperBonus 계산
         if (self.players[self.player].allUpperUsed()):
             self.fields[self.UPPERTOTAL][self.player].configure(text=str(self.players[self.player].getUpperScore()))
-        if (self.players[self.player].getUpperScore() > 63):
-            self.fields[self.UPPERBONUS][self.player].configure(text="35")  # UPPERBONUS=7
-        else:
-            self.fields[self.UPPERBONUS][self.player].configure(text="0")  # UPPERBONUS=7
+            if (self.players[self.player].getUpperScore() > 63):
+                self.fields[self.UPPERBONUS][self.player].configure(text="35")  # UPPERBONUS=7
+            else:
+                self.fields[self.UPPERBONUS][self.player].configure(text="0")  # UPPERBONUS=7
 
         # LOWER category 전부 사용되었으면 LowerScore 계산
         if (self.players[self.player].allLowerUsed()):
@@ -135,8 +135,9 @@ class YahtzeeBoard:
             i['text'] = "?"
 
     def diceListener(self, row):  # DiceListener
-        self.diceButtons[row]['state'] = 'disabled'
-        self.diceButtons[row]['bg'] = 'light gray'
+        if self.diceButtons[row]['text'] != '?':
+            self.diceButtons[row]['state'] = 'disabled'
+            self.diceButtons[row]['bg'] = 'light gray'
 
     def initInterface(self):  # Yahtzee 보드 윈도우 생성
         self.window = Tk("Yahtzee Game")

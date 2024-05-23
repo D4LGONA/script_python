@@ -11,6 +11,7 @@ class Player:
         self.scores[index] = score
 
     def setAtUsed(self, index):
+        print(index)
         # used를 true로 만드는 것
         self.used[index] = True
 
@@ -26,7 +27,7 @@ class Player:
         # 하단 7개 점수 합계
         score = 0
         if self.allLowerUsed():
-            for i in range(Player.LOWER):
+            for i in range(self.UPPER, self.UPPER + self.LOWER):
                 score += self.scores[i]
         return score
 
@@ -41,7 +42,7 @@ class Player:
         return self.name
 
     def allLowerUsed(self): #lower category 7개 모두 사용되었는가 ?
-        for i in range(self.LOWER):
+        for i in range(self.UPPER, self.UPPER + self.LOWER):
             if self.used[i] == False:
                 return False
         return True
