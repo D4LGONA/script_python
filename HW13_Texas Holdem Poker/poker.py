@@ -6,7 +6,6 @@ from player import *
 import random
 
 # todo: tie 판정이 제대로 안되는 듯
-# todo: 각자 족보의 뭐가 나왔는지 tkinter로 출력하는것 추가해야 함
 
 class BlackJack:
     def setupButton(self):
@@ -32,9 +31,9 @@ class BlackJack:
         self.LplayerMoney = Label(text="You have $1000", width=15, height=1, font=self.fontstyle, bg="green", fg="cyan")
         self.LplayerMoney.place(x=500, y=450)
 
-        self.LplayerPts = Label(text="", width=2, height=1, font=self.fontstyle2, bg="green", fg="white")
-        self.LplayerPts.place(x=300, y=300)
-        self.LdealerPts = Label(text="", width=2, height=1, font=self.fontstyle2, bg="green", fg="white")
+        self.LplayerPts = Label(text="", width=15, height=1, font=self.fontstyle2, bg="green", fg="white")
+        self.LplayerPts.place(x=300, y=350)
+        self.LdealerPts = Label(text="", width=15, height=1, font=self.fontstyle2, bg="green", fg="white")
         self.LdealerPts.place(x=300, y=100)
 
         self.winner = Label(text="", width=15, height=1, font=self.fontstyle, bg="green", fg="white")
@@ -170,6 +169,7 @@ class BlackJack:
 
         self.setupButton()
 
+
     def compare_players(self, player1, player2):
         rank1, hand_type1, hand_values1 = player1.checking()
         rank2, hand_type2, hand_values2 = player2.checking()
@@ -179,10 +179,12 @@ class BlackJack:
         elif rank2 > rank1:
             winner = player2
         else:
-            if hand_values1 > hand_values2:
+            if hand_values1[0].value > hand_values2[0].value:
                 winner = player1
-            else:
+            elif hand_values2[0].value > hand_values1[0].value:
                 winner = player2
+            else:
+                winner = None
 
         return winner, rank1, hand_type1, rank2, hand_type2
 
@@ -207,16 +209,12 @@ class BlackJack:
             PlaySound('resource/sounds/wrong.wav', SND_FILENAME)
             self.winner.configure(text="lost!")
         else:
-            pass
+            self.playerMoney += self.betMoney
+            PlaySound('resource/sounds/ding.wav', SND_FILENAME)
+            self.winner.configure(text="tie!")
 
-
-        print(f"Player 1: {self.player.name}")
-        print("Best hand type:", hand_type1)
-        print("Rank:", rank1)
-
-        print(f"\nPlayer 2: {self.dealer.name}")
-        print("Best hand type:", hand_type2)
-        print("Rank:", rank2)
+        self.LplayerPts.configure(text=hand_type1)
+        self.LdealerPts.configure(text=hand_type2)
 
         self.betMoney = 0
         self.LplayerMoney.configure(text="You have $" + str(self.playerMoney))
@@ -259,7 +257,7 @@ class BlackJack:
         self.LcardsBoard[self.nCardsBoard].image = p
         self.LcardsBoard[self.nCardsBoard].place(x=250 + self.nCardsBoard * 100, y=200)
         self.nCardsBoard += 1
-        PlaySound('resource/sounds/cardFlip1.wav', SND_FILENAME)
+
 
     def playerDeal(self): # 플레이어에게 카드깔기
         newCard = Card(self.cardDeck[self.deckN])
@@ -285,6 +283,8 @@ class BlackJack:
 
 
     def deal(self):
+        PlaySound('resource/sounds/cardFlip1.wav', SND_FILENAME)
+
         if self.nCardsPlayer == 0:
             self.player.reset()
             self.dealer.reset()  # 카드 덱 52장 셔플링 0,1,,.51
@@ -296,10 +296,14 @@ class BlackJack:
             self.dealerDeal()
             self.playerDeal()
             self.dealerDeal()
-            PlaySound('resource/sounds/cardFlip1.wav', SND_FILENAME)
 
         else:
-            self.boardDeal()
+            if self.nCardsBoard == 0:
+                self.boardDeal()
+                self.boardDeal()
+                self.boardDeal()
+            else:
+                self.boardDeal()
 
         self.Check['state'] = 'active'
         self.Check['bg'] = 'white'
@@ -331,6 +335,8 @@ class BlackJack:
         self.LcardsDealer = []
         self.LcardsBoard = []
         self.deckN = 0
+
+
         self.window.mainloop()
 
 BlackJack()

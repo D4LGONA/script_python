@@ -70,44 +70,63 @@ class Player:
 
     def hand_rank(self, cards):
         if self.is_straight_flush(cards):
-            return (8, "Straight Flush", sorted([self.card_value(card) for card in cards if self.is_straight([card])], reverse=True))
+            straight_flush_cards = sorted(cards, key=lambda card: self.card_value(card), reverse=True)[:5]
+            return (8, "Straight Flush", straight_flush_cards)
         if self.is_four_of_a_kind(cards):
             values = [self.card_value(card) for card in cards]
             four_kind_value = max(values, key=values.count)
-            return (7, "Four of a Kind", [four_kind_value, max(v for v in values if v != four_kind_value)])
+            four_kind_cards = [card for card in cards if self.card_value(card) == four_kind_value]
+            return (7, "Four of a Kind", four_kind_cards)
         if self.is_full_house(cards):
             values = [self.card_value(card) for card in cards]
             three_kind_value = max(values, key=values.count)
             pair_value = max(v for v in values if v != three_kind_value)
-            return (6, "Full House", [three_kind_value, pair_value])
+            full_house_cards = [card for card in cards if
+                                self.card_value(card) == three_kind_value or self.card_value(card) == pair_value]
+            three_kind_cards = [card for card in full_house_cards if self.card_value(card) == three_kind_value]
+            pair_cards = [card for card in full_house_cards if self.card_value(card) == pair_value]
+            return (6, "Full House", three_kind_cards + pair_cards)
         if self.is_flush(cards):
-            flush_cards = [card for card in cards if self.is_flush([card])]
-            return (5, "Flush", sorted([self.card_value(card) for card in flush_cards], reverse=True)[:5])
+            suits = [card.getsuit() for card in cards]
+            flush_suit = max(set(suits), key=suits.count)
+            flush_cards = sorted([card for card in cards if card.getsuit() == flush_suit],
+                                 key=lambda card: self.card_value(card), reverse=True)[:5]
+            return (5, "Flush", flush_cards)
         if self.is_straight(cards):
-            return (4, "Straight", sorted([self.card_value(card) for card in cards if self.is_straight([card])], reverse=True)[:5])
+            values = sorted(set(self.card_value(card) for card in cards))
+            if values[-5:] == [10, 11, 12, 13, 14]:  # Handling the special case for Ace-high straight
+                straight_cards = [card for card in cards if self.card_value(card) in [10, 11, 12, 13, 14]]
+            else:
+                for i in range(len(values) - 4):
+                    if values[i:i + 5] == list(range(values[i], values[i] + 5)):
+                        straight_values = values[i:i + 5]
+                        break
+                straight_cards = [card for card in cards if self.card_value(card) in straight_values]
+            return (4, "Straight", sorted(straight_cards, key=lambda card: self.card_value(card), reverse=True)[:5])
         if self.is_three_of_a_kind(cards):
             values = [self.card_value(card) for card in cards]
             three_kind_value = max(values, key=values.count)
-            high_cards = sorted([v for v in values if v != three_kind_value], reverse=True)
-            return (3, "Three of a Kind", [three_kind_value] + high_cards[:2])
+            three_kind_cards = [card for card in cards if self.card_value(card) == three_kind_value]
+            return (3, "Three of a Kind", three_kind_cards)
         if self.is_two_pair(cards):
             values = [self.card_value(card) for card in cards]
-            pairs = sorted([v for v in set(values) if values.count(v) == 2], reverse=True)
-            high_card = max(v for v in values if v not in pairs)
-            return (2, "Two Pair", pairs + [high_card])
+            pairs = sorted([v for v in set(values) if values.count(v) == 2], reverse=True)[:2]
+            pair_cards = [card for card in cards if self.card_value(card) in pairs]
+            return (2, "Two Pair", pair_cards)
         if self.is_one_pair(cards):
             values = [self.card_value(card) for card in cards]
             pair_value = max(v for v in set(values) if values.count(v) == 2)
-            high_cards = sorted([v for v in values if v != pair_value], reverse=True)
-            return (1, "One Pair", [pair_value] + high_cards[:3])
-        return (0, "High Card", sorted([self.card_value(card) for card in cards], reverse=True)[:5])
+            pair_cards = [card for card in cards if self.card_value(card) == pair_value]
+            return (1, "One Pair", pair_cards)
+        high_cards = sorted(cards, key=lambda card: self.card_value(card), reverse=True)[:5]
+        return (0, "High Card", high_cards)
 
     def best_hand(self):
         best = None
         best_rank = (-1, )
         for combo in itertools.combinations(self.cards, 5):
             rank = self.hand_rank(combo)
-            if rank > best_rank:
+            if rank[0] > best_rank[0]:
                 best = combo
                 best_rank = rank
         return best
